@@ -230,11 +230,18 @@ class ArmLab:
            step: float = 0.5, tol: float = 5e-4) -> tuple[np.ndarray, float]:
         """Damped least-squares IK on the TCP site. Returns (joint targets, residual).
 
+        Pure solver: it restores the arm's qpos before returning. It used to leave the
+        solution in d.qpos, i.e. every move_tcp *teleported* the arm to the target pose and
+        only then let the servo hold it. That went unnoticed while carrying was kinematic;
+        with real contacts it means the fingers jump past the object instead of lifting it
+        (measured: 16 N pinch, cube left on the table, 0 mm rise — see tools/diagnose_slip.py).
+
         The orientation error must be expressed in the same (world) frame as the
         Jacobian's rotational rows: R_err = R_target @ R_current^T.
         """
         m, d = self.m, self.d
-        q = d.qpos[:7].copy()
+        q0 = d.qpos[:7].copy()
+        q = q0.copy()
         tgt_mat = self.home_mat if target_mat is None else np.asarray(target_mat)
         jacp = np.zeros((3, m.nv))
         jacr = np.zeros((3, m.nv))
@@ -256,6 +263,8 @@ class ArmLab:
         d.qpos[:7] = q
         mujoco.mj_forward(m, d)
         residual = float(np.linalg.norm(np.asarray(target_pos) - d.site_xpos[self.site_tcp]))
+        d.qpos[:7] = q0                      # restore: the servo, not the solver, moves the arm
+        mujoco.mj_forward(m, d)
         return q, residual
 
     def move_tcp(self, target_pos, target_mat=None, tol: float = 0.002, iters: int = 4) -> float:
