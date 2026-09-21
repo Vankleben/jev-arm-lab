@@ -58,6 +58,28 @@ def enforce(d, gate_confidence: float, gate_grasp: float) -> tuple[str, str]:
     return final, "; ".join(notes)
 
 
+PROGRESS_EPS = 0.05   # 进度估计变化小于这个数视为"毫无变化"
+
+
+def stale_channels(intent: str, ages: dict, stale_limit: float) -> dict:
+    """该技能依赖的通道里，哪些读数已经旧过 stale_limit。"""
+    return {ch: ages[ch] for ch in SKILL_NEEDS.get(intent, ()) if ages[ch] > stale_limit}
+
+
+def watchdog_trip(history: list[dict], intent: str, progress_now: float) -> bool:
+    """卡死看门狗：同一动作连续要第三次，且判断层自己的进度估计毫无变化。
+
+    "说谎"的传感器能靠通道间矛盾发现，"冻结"的只能靠时钟和重复：模型看不见
+    世界变化时，它的进度估计会停在原地。"毫无变化"这半边必须对照 history 里
+    记录的每轮进度来查（修复前只查了动作重复，与注释承诺不符）。
+    """
+    if intent == "hold" or len(history) < 2:
+        return False
+    if [h["skill"] for h in history[-2:]] != [intent, intent]:
+        return False
+    return all(abs(h["progress"] - progress_now) < PROGRESS_EPS for h in history[-2:])
+
+
 def write_png(path: Path, rgb) -> None:
     """Minimal PNG writer, so rendering needs no extra dependency."""
     h, w, _ = rgb.shape
@@ -204,15 +226,17 @@ def main(argv=None) -> int:
             # 新鲜度闸门：技能依赖哪条通道，就要求那条通道的数据足够新。
             # 这是"视觉冻结"那个发现的解法——不更新且不报错的传感器，只能靠时钟发现。
             ages = sensors.ages(lab.d.time)
-            stale = {ch: ages[ch] for ch in SKILL_NEEDS.get(final, ()) if ages[ch] > args.stale_limit}
+            stale = stale_channels(final, ages, args.stale_limit)
             # 卡死看门狗：同一个动作连着要第三次，而且判断层自己的进度估计毫无变化
             # —— 说明它看不见世界的变化（典型原因：某个通道的数据烂住了）。交给人。
-            repeated = [h["skill"] for h in history[-2:]] == [final, final] and final != "hold"
+            repeated = watchdog_trip(history, final, decision.progress_score)
             if repeated and not stale:
                 escalated = True
                 record = {"cycle": cycle, "state": state, "judge": decision.as_log(),
                           "final_intent": final, "override": note,
                           "escalation": {"blocked_intent": final, "reason": "same skill requested 3x with no change",
+                                         "progress_estimates": [h["progress"] for h in history[-2:]]
+                                                               + [round(decision.progress_score, 3)],
                                          "limit_s": args.stale_limit,
                                          "action": "blocked; ask a human (not making progress)"},
                           "ground_truth": gt_before}
@@ -243,7 +267,8 @@ def main(argv=None) -> int:
                 lab.shove(stress.shove_velocity)
             ctx = {"object": lab.object_pose()}
             result = SKILLS[final](lab, ctx)
-            history.append({"skill": final, "note": result["note"], "tcp_err_m": result["tcp_err_m"]})
+            history.append({"skill": final, "note": result["note"], "tcp_err_m": result["tcp_err_m"],
+                            "progress": round(decision.progress_score, 3)})
 
             gt = lab.grasp_flags()
             record = {
