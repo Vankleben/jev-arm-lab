@@ -1,0 +1,146 @@
+[
+  {
+    "variant": "baseline (condim=3, mu=1.2, 8N)",
+    "grip_force_n": 8.0,
+    "dims": [
+      3
+    ],
+    "fric": [
+      1.2,
+      1.2,
+      0.05
+    ],
+    "gap_after_close_mm": 57.21,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 14.52,
+    "peak_normal_n": 15.9,
+    "drift_mm": -2.97,
+    "lifted_mm": 148.03,
+    "cone_first_over_0.9_at_t": 2.88,
+    "contact_lost_at_t": null,
+    "HELD": true
+  },
+  {
+    "variant": "squeeze 20N",
+    "grip_force_n": 20.0,
+    "dims": [
+      3
+    ],
+    "fric": [
+      1.2,
+      1.2,
+      0.05
+    ],
+    "gap_after_close_mm": 53.35,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 34.97,
+    "peak_normal_n": 36.81,
+    "drift_mm": -2.96,
+    "lifted_mm": 148.04,
+    "cone_first_over_0.9_at_t": 2.858,
+    "contact_lost_at_t": null,
+    "HELD": true
+  },
+  {
+    "variant": "condim=4 (torsional on)",
+    "grip_force_n": 8.0,
+    "dims": [
+      4
+    ],
+    "fric": [
+      1.2,
+      1.2,
+      0.05
+    ],
+    "gap_after_close_mm": 58.06,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 15.09,
+    "peak_normal_n": 16.7,
+    "drift_mm": -2.9,
+    "lifted_mm": 148.14,
+    "cone_first_over_0.9_at_t": 3.044,
+    "contact_lost_at_t": null,
+    "HELD": true
+  },
+  {
+    "variant": "condim=6 (torsion+roll)",
+    "grip_force_n": 8.0,
+    "dims": [
+      6
+    ],
+    "fric": [
+      1.2,
+      1.2,
+      0.05
+    ],
+    "gap_after_close_mm": 58.64,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 15.08,
+    "peak_normal_n": 17.47,
+    "drift_mm": -3.23,
+    "lifted_mm": 147.84,
+    "cone_first_over_0.9_at_t": 3.172,
+    "contact_lost_at_t": null,
+    "HELD": true
+  },
+  {
+    "variant": "pad mu=1.8 (rubber)",
+    "grip_force_n": 8.0,
+    "dims": [
+      3
+    ],
+    "fric": [
+      1.8,
+      1.8,
+      0.05
+    ],
+    "gap_after_close_mm": 53.34,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 9.52,
+    "peak_normal_n": 12.5,
+    "drift_mm": -19.32,
+    "lifted_mm": 130.22,
+    "cone_first_over_0.9_at_t": 3.682,
+    "contact_lost_at_t": null,
+    "HELD": false
+  },
+  {
+    "variant": "rubber + condim=6 + 20N",
+    "grip_force_n": 20.0,
+    "dims": [
+      6
+    ],
+    "fric": [
+      1.8,
+      1.8,
+      0.05
+    ],
+    "gap_after_close_mm": 50.34,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 32.56,
+    "peak_normal_n": 34.66,
+    "drift_mm": -4.16,
+    "lifted_mm": 146.88,
+    "cone_first_over_0.9_at_t": 3.184,
+    "contact_lost_at_t": null,
+    "HELD": true
+  }
+]
