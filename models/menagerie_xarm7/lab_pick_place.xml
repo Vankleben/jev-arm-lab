@@ -1,0 +1,46 @@
+<mujoco model="xarm7 pick-place lab">
+  <!-- 场景：xArm7 + 桌子 + 待抓方块 + 目标区。xarm7.xml / hand.xml / assets 来自
+       MuJoCo Menagerie（Apache-2.0），见同目录 LICENSE 与 README.md。 -->
+  <include file="xarm7_lab.xml"/>
+
+  <statistic center="0.35 0 0.25" extent="0.8"/>
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.35 0.35 0.35" specular="0 0 0"/>
+    <global azimuth="140" elevation="-22" offwidth="1280" offheight="720"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+    <material name="cube_mat" rgba="0.85 0.15 0.15 1"/>
+    <material name="target_mat" rgba="0.15 0.4 0.85 0.7"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+    <geom type="cylinder" size=".06 .06" pos="0 0 .06" rgba="1 1 1 1"/>
+
+    <!-- 桌面与机械臂底座同高（z=0.12），方便从上方抓取 -->
+    <body name="table" pos="0.36 0 0.06">
+      <geom name="table_top" type="box" size="0.30 0.30 0.06" rgba="0.55 0.45 0.35 1"/>
+    </body>
+
+    <!-- 待抓取方块：6cm 立方体，中心 z=0.15。质量显式设为 50 g（塑料块量级）——
+           默认密度 1000 kg/m³ 会给出 216 g，桌面摩擦把它按住后很难被小夹爪带走。 -->
+    <body name="cube" pos="0.36 0.13 0.15">
+      <freejoint name="cube_free"/>
+      <geom name="cube_geom" type="box" size="0.03 0.03 0.03" material="cube_mat"
+            friction="1.0 0.05 0.001" mass="0.05"/>
+    </body>
+
+    <!-- 目标区：桌面上的标记板（不参与碰撞） -->
+    <body name="target" pos="0.36 -0.13 0.121">
+      <geom name="target_geom" type="box" size="0.06 0.06 0.001" material="target_mat"
+            contype="0" conaffinity="0"/>
+    </body>
+  </worldbody>
+
+</mujoco>

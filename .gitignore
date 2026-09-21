@@ -1,0 +1,14 @@
+# 虚拟环境（用 README 里的命令重建）
+.venv/
+
+# MuJoCo 运行时日志
+MUJOCO_LOG.TXT
+
+# Python
+__pycache__/
+*.pyc
+
+# 本地渲染产物（用 tools/replay_demo.py 可重新生成）
+out/
+out_jev/
+out_demo/
