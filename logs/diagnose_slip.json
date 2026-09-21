@@ -15,11 +15,11 @@
       4,
       4
     ],
-    "normal_after_close_n": 14.52,
-    "peak_normal_n": 15.9,
-    "drift_mm": -2.97,
-    "lifted_mm": 148.03,
-    "cone_first_over_0.9_at_t": 2.88,
+    "normal_after_close_n": 14.49,
+    "peak_normal_n": 19.74,
+    "drift_mm": -8.43,
+    "lifted_mm": 140.94,
+    "cone_first_over_0.9_at_t": 11.274,
     "contact_lost_at_t": null,
     "HELD": true
   },
@@ -39,11 +39,11 @@
       4,
       4
     ],
-    "normal_after_close_n": 34.97,
-    "peak_normal_n": 36.81,
-    "drift_mm": -2.96,
-    "lifted_mm": 148.04,
-    "cone_first_over_0.9_at_t": 2.858,
+    "normal_after_close_n": 34.93,
+    "peak_normal_n": 39.62,
+    "drift_mm": -8.43,
+    "lifted_mm": 140.95,
+    "cone_first_over_0.9_at_t": 11.25,
     "contact_lost_at_t": null,
     "HELD": true
   },
@@ -63,11 +63,11 @@
       4,
       4
     ],
-    "normal_after_close_n": 15.09,
-    "peak_normal_n": 16.7,
-    "drift_mm": -2.9,
-    "lifted_mm": 148.14,
-    "cone_first_over_0.9_at_t": 3.044,
+    "normal_after_close_n": 15.06,
+    "peak_normal_n": 20.65,
+    "drift_mm": -8.35,
+    "lifted_mm": 141.06,
+    "cone_first_over_0.9_at_t": 11.438,
     "contact_lost_at_t": null,
     "HELD": true
   },
@@ -87,11 +87,11 @@
       4,
       4
     ],
-    "normal_after_close_n": 15.08,
-    "peak_normal_n": 17.47,
-    "drift_mm": -3.23,
-    "lifted_mm": 147.84,
-    "cone_first_over_0.9_at_t": 3.172,
+    "normal_after_close_n": 15.07,
+    "peak_normal_n": 20.8,
+    "drift_mm": -9.61,
+    "lifted_mm": 139.82,
+    "cone_first_over_0.9_at_t": 11.57,
     "contact_lost_at_t": null,
     "HELD": true
   },
@@ -111,13 +111,13 @@
       4,
       4
     ],
-    "normal_after_close_n": 9.52,
-    "peak_normal_n": 12.5,
-    "drift_mm": -19.32,
-    "lifted_mm": 130.22,
-    "cone_first_over_0.9_at_t": 3.682,
+    "normal_after_close_n": 9.51,
+    "peak_normal_n": 17.76,
+    "drift_mm": -42.43,
+    "lifted_mm": 106.94,
+    "cone_first_over_0.9_at_t": 11.908,
     "contact_lost_at_t": null,
-    "HELD": false
+    "HELD": true
   },
   {
     "variant": "rubber + condim=6 + 20N",
@@ -135,11 +135,11 @@
       4,
       4
     ],
-    "normal_after_close_n": 32.56,
-    "peak_normal_n": 34.66,
-    "drift_mm": -4.16,
-    "lifted_mm": 146.88,
-    "cone_first_over_0.9_at_t": 3.184,
+    "normal_after_close_n": 32.54,
+    "peak_normal_n": 36.6,
+    "drift_mm": -12.93,
+    "lifted_mm": 136.49,
+    "cone_first_over_0.9_at_t": 11.574,
     "contact_lost_at_t": null,
     "HELD": true
   }

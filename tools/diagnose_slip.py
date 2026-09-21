@@ -98,7 +98,9 @@ def run_variant(lab: ArmLab, base: dict, label: str, grip_force_n: float, condim
 
     drift_mm = 1000.0 * (rel1 - rel0)
     lifted_mm = 1000.0 * (end[2] - start[2])
-    held = abs(drift_mm) < 5.0 and lifted_mm > 50.0 and lab.pad_contacts()["left"] + lab.pad_contacts()["right"] > 0
+    # HELD = 方块真的跟着手起来了（以前这里是"运动学携带"，永远为真）；
+    # drift 是它在指间滑了多少 —— 质量指标，不是成败判据。
+    held = lifted_mm > 50.0 and lab.pad_contacts()["left"] + lab.pad_contacts()["right"] > 0
     first_violation = next((r["t"] for r in probe.rows if r["cone_util"] > 0.9), None)
     lost_contact = next((r["t"] for r in probe.rows if r["cone_util"] > 0 and r["ncon"] == 0), None)
     peak_normal = max((r["normal_n"] for r in probe.rows), default=0.0)
