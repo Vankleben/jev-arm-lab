@@ -12,3 +12,10 @@ __pycache__/
 out/
 out_jev/
 out_demo/
+
+# 密钥与本地配置：永不提交（API key 从环境变量 TYPESAFE_API_KEY 读取）
+.env
+.env.*
+*.key
+secrets.*
+config.py
