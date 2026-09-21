@@ -1,0 +1,39 @@
+
+[none] 5 scenes (live) ...
+
+[grasp_off] 5 scenes (live) ...
+
+[tactile_dead] 5 scenes (live) ...
+
+[tactile_stuck] 5 scenes (live) ...
+
+[occlusion] 5 scenes (live) ...
+
+[camera_frozen] 5 scenes (live) ...
+
+[noise] 5 scenes (live) ...
+
+[shove] 5 scenes (live) ...
+
+[low_friction] 5 scenes (live) ...
+
+[marginal_grip] 5 scenes (live) ...
+
+[heavy_object] 5 scenes (live) ...
+
+================ failure map ================
+stressor           完成率     升级给人     掉件率    落点mm    轮数     准确率  Brier    危险FP    滑脱FP
+------------------------------------------------------------------------------------
+none              100%       0%      0%     1.8   6.8    100%  0.085       0       0
+grasp_off         100%       0%     40%     4.3  10.4     97%  0.075       0       0
+tactile_dead      100%       0%      0%     0.5   6.0    100%  0.073       0       0
+tactile_stuck      60%      20%     60%    11.5  13.0     93%  0.067       1       0
+occlusion           0%     100%      0%   270.1   2.8    100%  0.030       0       0
+camera_frozen       0%     100%      0%   270.1   2.0    100%  0.003       0       0
+noise             100%       0%      0%     1.8   6.6     95%  0.108       0       0
+shove             100%       0%     40%     5.6  10.6     94%  0.084       1       0
+low_friction        0%       0%    100%   267.6  20.0     75%  0.108      12       0
+marginal_grip      20%       0%    100%    52.6  19.4     88%  0.073       2       0
+heavy_object        0%      20%    100%   251.4  19.6     85%  0.075       2       0
+
+written to logs/stress_map.json | wall time 1254s
