@@ -97,10 +97,11 @@ STRESSORS: dict[str, Stress] = {
     "noise": Stress(name="noise", noise_obj_mm=10.0, noise_gap_mm=4.0),          # 位置抖 10 mm
     "shove": Stress(name="shove", shove_velocity=0.9, shove_cycle=1),            # 第 1 轮被外力推一下
     # 物理型（真实接触搬运解锁），阈值都在 tools/diagnose_slip.py 里实测过：
-    # 夹持力 8 N/指、方块 50 g（0.49 N）时，μ≤0.05 直接滑掉，μ≈0.08 能拿住但一路滑
+    # 夹持力 8 N/指、方块 50 g（0.49 N）时：μ≤0.05 直接滑掉；μ≈0.08 能拿住但一路滑；
+    # 质量 0.5 kg 在平顺运动（ramp=24）下仍拎得住，1.5 kg（钢块量级）才稳定滑脱。
     "low_friction": Stress(name="low_friction", pad_friction=0.05),              # 指垫打滑 -> 掉落
     "marginal_grip": Stress(name="marginal_grip", pad_friction=0.08),            # 临界夹持 -> 静默滑移
-    "heavy_object": Stress(name="heavy_object", object_mass_kg=0.5),             # 50 g -> 500 g -> 掉落
+    "heavy_object": Stress(name="heavy_object", object_mass_kg=1.5),             # 50 g -> 1.5 kg -> 掉落
 }
 
 

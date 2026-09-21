@@ -22,8 +22,8 @@ from summarize_log import report   # noqa: E402
 
 
 def row(source="jev", prob=0.5, evidence="none", prog=0.0, gt_prog=0,
-        override="", intent="grasp") -> dict:
-    gt: dict = {"grasp_evidence": evidence}
+        override="", intent="grasp", slipping=False) -> dict:
+    gt: dict = {"grasp_evidence": evidence, "slipping": slipping}
     if gt_prog == 1:
         gt.update(attached=True, lifted=False, in_target=False)
     elif gt_prog == 2:
@@ -92,6 +92,25 @@ class TestGoldenScoring(unittest.TestCase):
         self.assertEqual(self.stats["vetoes"], 2)
         self.assertEqual(self.stats["fallback_cycles"], 1)
         self.assertEqual(self.stats["intents"]["grasp"], 3)
+
+
+class TestDangerSlip(unittest.TestCase):
+    """物理危险指标：说"抓稳了"（>=0.6）而真值在滑 —— danger_fp 的物理版本。"""
+
+    def test_only_high_confidence_while_slipping_counts(self):
+        rows = [
+            row(prob=0.80, evidence="proven", prog=2.0, gt_prog=2, slipping=True),   # 计 1
+            row(prob=0.30, evidence="proven", prog=2.0, gt_prog=2, slipping=True),   # 置信度低，不计
+            row(prob=0.90, evidence="proven", prog=2.0, gt_prog=2, slipping=False),  # 说对了，不计
+        ]
+        stats = report([write_fixture(rows)], verbose=False)
+        self.assertEqual(stats["danger_slip_fp"], 1)
+
+    def test_old_logs_without_slipping_key_are_safe(self):
+        legacy = row(prob=0.9, evidence="proven", prog=2.0, gt_prog=2)
+        del legacy["ground_truth"]["slipping"]   # 运动学携带时期的日志没这个键
+        stats = report([write_fixture([legacy])], verbose=False)
+        self.assertEqual(stats["danger_slip_fp"], 0)
 
 
 class TestFallbackWarning(unittest.TestCase):

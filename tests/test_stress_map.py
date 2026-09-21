@@ -21,6 +21,35 @@ def executed(obj=(0.36, -0.13, 0.15), in_target=True) -> dict:
     return {"result": {"object": list(obj)}, "ground_truth_after": {"in_target": in_target}}
 
 
+def carried_row(tcp_z: float, obj_z: float, attached: bool, in_target: bool = False,
+                was_held: bool = False) -> dict:
+    return {"result": {"object": [0.36, -0.13, obj_z]},
+            "state": {"tcp": {"pos_m": [0.36, -0.13, tcp_z]}},
+            "ground_truth": {"attached": was_held},
+            "ground_truth_after": {"attached": attached, "in_target": in_target}}
+
+
+class TestDropDetection(unittest.TestCase):
+    def test_approach_alone_is_not_a_drop(self):
+        # 回归：曾经把"接近阶段手在方块上方"误判成掉件，旧日志 40 个场景全被判成 100% 掉件
+        s = scene_stats([carried_row(tcp_z=0.30, obj_z=0.15, attached=False)])
+        self.assertFalse(s["dropped"])
+
+    def test_mid_air_loss_is_a_drop(self):
+        rows = [carried_row(tcp_z=0.30, obj_z=0.29, attached=True),
+                carried_row(tcp_z=0.30, obj_z=0.15, attached=False, was_held=True)]
+        self.assertTrue(scene_stats(rows)["dropped"])
+
+    def test_release_in_target_is_not_a_drop(self):
+        rows = [carried_row(tcp_z=0.20, obj_z=0.15, attached=True),
+                carried_row(tcp_z=0.30, obj_z=0.15, attached=False, in_target=True)]
+        self.assertFalse(scene_stats(rows)["dropped"])
+
+    def test_release_outside_target_while_hand_is_low_is_not_a_drop(self):
+        rows = [carried_row(tcp_z=0.16, obj_z=0.15, attached=False, was_held=True)]
+        self.assertFalse(scene_stats(rows)["dropped"])   # 手还低着，只是放偏了
+
+
 class TestSceneStats(unittest.TestCase):
     def test_completed_scene(self):
         s = scene_stats([{"judge": {}}, executed()])

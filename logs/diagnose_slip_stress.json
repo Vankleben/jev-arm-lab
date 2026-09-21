@@ -21,7 +21,7 @@
     "drift_mm": -8.42,
     "lifted_mm": 140.82,
     "cone_first_over_0.9_at_t": 10.508,
-    "seconds": 0.5,
+    "seconds": 0.6,
     "HELD": true
   },
   {
@@ -61,17 +61,17 @@
       1.0,
       0.05
     ],
-    "gap_after_close_mm": 59.19,
+    "gap_after_close_mm": 59.43,
     "pad_contacts_LR": [
       4,
       4
     ],
-    "normal_after_close_n": 19.38,
-    "peak_normal_n": 53.6,
-    "drift_mm": -149.58,
+    "normal_after_close_n": 29.22,
+    "peak_normal_n": 47.63,
+    "drift_mm": -149.35,
     "lifted_mm": -0.11,
-    "cone_first_over_0.9_at_t": 10.694,
-    "seconds": 1.0,
+    "cone_first_over_0.9_at_t": 10.696,
+    "seconds": 0.7,
     "HELD": false
   },
   {
@@ -96,7 +96,7 @@
     "drift_mm": -40.9,
     "lifted_mm": 107.68,
     "cone_first_over_0.9_at_t": 7.396,
-    "seconds": 1.5,
+    "seconds": 1.8,
     "HELD": true
   }
 ]
