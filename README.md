@@ -35,7 +35,8 @@ cd D:\AI\jev-arm-lab
 .\.venv\Scripts\python.exe tools\summarize_log.py logs\jev_run_loose.jsonl
 ```
 
-依赖只有 `mujoco` 和 `numpy`（都在 `.venv` 里）。
+依赖只有 `mujoco` 和 `numpy`（版本见 `requirements.txt`，在 `.venv` 里）。
+回归测试（不需要 API key）：`.venv\Scripts\python.exe -m unittest discover -s tests -t . -v`
 
 ## 目录
 
