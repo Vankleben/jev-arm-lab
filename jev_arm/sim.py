@@ -38,6 +38,8 @@ class ArmLab:
         self._calibrate_tcp()
         self.home_arm = self.m.qpos0[:7].copy()
         self.tick_hook = None  # optional callback after each physics step (viewer sync)
+        self.ramp = 24         # move_tcp sub-targets; tuned end-to-end (0.4 mm median placement,
+                               # vs 11 mm at a single step) — see tools/diagnose_slip.py
         self.reset()
 
     # ---------------------------------------------------------------- setup
@@ -243,18 +245,18 @@ class ArmLab:
         return q, residual
 
     def move_tcp(self, target_pos, target_mat=None, tol: float = 0.002, iters: int = 4,
-                 ramp: int = 8) -> float:
+                 ramp: int | None = None) -> float:
         """Servo the TCP to a Cartesian pose, correcting for the steady-state sag.
 
-        The move is ramped — a linear interpolation over `ramp` sub-targets — instead of one
-        step command. A step makes the position servos accelerate hard, which momentarily
-        exceeds the friction cone of the grasp and lets the payload slide inside the fingers
-        (measured: 10 mm of in-hand slip during a single lift, and that offset lands exactly in
-        the placement error). Ramping is also what a real arm does. The position servos settle
-        a few millimetres away from the commanded pose under gravity (measured up to 8 mm),
-        which is enough to spoil a 60 mm cube grasp; the sag is repeatable, so commanding
-        `target + (target - measured)` twice or thrice closes it.
+        The move is ramped — a linear interpolation over `ramp` sub-targets (default
+        `self.ramp`) — instead of one step command, because a step makes the position servos
+        accelerate hard and momentarily exceeds the friction cone of the grasp, letting the
+        payload slide inside the fingers. The position servos settle a few millimetres away
+        from the commanded pose under gravity (measured up to 8 mm), which is enough to spoil
+        a 60 mm cube grasp; the sag is repeatable, so commanding `target + (target - measured)`
+        twice or thrice closes it.
         """
+        ramp = self.ramp if ramp is None else ramp
         target = np.asarray(target_pos, dtype=float)
         cmd = target.copy()
         for _ in range(iters):

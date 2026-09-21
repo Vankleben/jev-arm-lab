@@ -136,6 +136,8 @@ def main(argv=None) -> int:
     ap.add_argument("--quiet", action="store_true", help="批量跑时不要逐轮打印")
     ap.add_argument("--stale-limit", type=float, default=1.0,
                     help="传感数据超过这个年龄（仿真秒）就不许动，交给人处理")
+    ap.add_argument("--ramp", type=int, default=24,
+                    help="move_tcp 的分段插值段数；24 是端到端标定的最优点（落点中位 0.4mm）")
     ap.add_argument("--gate-confidence", type=float, default=0.30)
     ap.add_argument("--gate-grasp", type=float, default=0.45)
     ap.add_argument("--stress", default="none",
@@ -145,6 +147,7 @@ def main(argv=None) -> int:
     stress = get_stress(args.stress)   # 先校验名字，别等仿真都建好了才失败
     rng = np.random.default_rng(args.seed)
     lab = ArmLab()
+    lab.ramp = args.ramp
     lab.stress, lab.rng = stress, rng
     scene_info = {"cube_start": [round(float(v), 4) for v in lab.object_pose()],
                   "target_xy": [float(TARGET_XY[0]), float(TARGET_XY[1])],
@@ -158,6 +161,7 @@ def main(argv=None) -> int:
     # and it is where the stressors reconfigure the world the judge is told about.
     sensors = SensorSuite(rng=rng)
     stress.configure(sensors)
+    stress.apply_physics(lab)     # 物理型难例（指垫打滑/工件变重）改模型参数
     sensors.prime(lab, lab.d.time)
 
     judge, label = make_judge(args.jev_mode)
