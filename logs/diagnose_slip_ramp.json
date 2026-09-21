@@ -1,0 +1,127 @@
+[
+  {
+    "variant": "ramp=2",
+    "grip_force_n": 8.0,
+    "ramp": 2,
+    "dims": [
+      3
+    ],
+    "fric": [
+      1.2,
+      1.2,
+      0.05
+    ],
+    "gap_after_close_mm": 57.22,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 14.48,
+    "peak_normal_n": 20.91,
+    "drift_mm": -3.95,
+    "lifted_mm": 145.19,
+    "cone_first_over_0.9_at_t": 4.106,
+    "seconds": 0.2,
+    "HELD": true
+  },
+  {
+    "variant": "ramp=4",
+    "grip_force_n": 8.0,
+    "ramp": 4,
+    "dims": [
+      3
+    ],
+    "fric": [
+      1.2,
+      1.2,
+      0.05
+    ],
+    "gap_after_close_mm": 57.22,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 14.48,
+    "peak_normal_n": 21.28,
+    "drift_mm": -6.04,
+    "lifted_mm": 143.27,
+    "cone_first_over_0.9_at_t": 6.77,
+    "seconds": 0.5,
+    "HELD": true
+  },
+  {
+    "variant": "ramp=8",
+    "grip_force_n": 8.0,
+    "ramp": 8,
+    "dims": [
+      3
+    ],
+    "fric": [
+      1.2,
+      1.2,
+      0.05
+    ],
+    "gap_after_close_mm": 57.22,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 14.46,
+    "peak_normal_n": 19.53,
+    "drift_mm": -8.42,
+    "lifted_mm": 140.82,
+    "cone_first_over_0.9_at_t": 10.508,
+    "seconds": 0.6,
+    "HELD": true
+  },
+  {
+    "variant": "ramp=16",
+    "grip_force_n": 8.0,
+    "ramp": 16,
+    "dims": [
+      3
+    ],
+    "fric": [
+      1.2,
+      1.2,
+      0.05
+    ],
+    "gap_after_close_mm": 57.21,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 14.51,
+    "peak_normal_n": 15.84,
+    "drift_mm": -10.64,
+    "lifted_mm": 138.64,
+    "cone_first_over_0.9_at_t": 15.974,
+    "seconds": 1.1,
+    "HELD": true
+  },
+  {
+    "variant": "ramp=32",
+    "grip_force_n": 8.0,
+    "ramp": 32,
+    "dims": [
+      3
+    ],
+    "fric": [
+      1.2,
+      1.2,
+      0.05
+    ],
+    "gap_after_close_mm": 57.21,
+    "pad_contacts_LR": [
+      4,
+      4
+    ],
+    "normal_after_close_n": 14.56,
+    "peak_normal_n": 17.29,
+    "drift_mm": -14.89,
+    "lifted_mm": 134.58,
+    "cone_first_over_0.9_at_t": 26.008,
+    "seconds": 1.5,
+    "HELD": true
+  }
+]
