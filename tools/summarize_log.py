@@ -57,8 +57,13 @@ def report(patterns: list[str], verbose: bool = True) -> dict:
             print("no records found")
         return {}
     sources = {r["judge"]["source"] for r in rows}
+    fallback_cycles = sum(1 for r in rows if r["judge"]["source"] == "fallback")
     say = print if verbose else (lambda *a, **k: None)
     say(f"logs: {len(scenes)} scene(s) | cycles: {len(rows)} | judge source: {', '.join(sorted(sources))}")
+    if fallback_cycles:
+        say(f"  WARNING: {fallback_cycles} cycles fell back to the rule judge (API failure); "
+            "the progress/veto/intent stats below mix rule-based decisions — "
+            "check the 'error' field of the fallback records before trusting them.")
 
     # 只给"无歧义"的样本打分：none = 确实没抓住，proven = 抓住并抬起过，
     # unproven（刚合上、还没动过）= 模型说"不确定"是对的，不计分。
@@ -70,7 +75,7 @@ def report(patterns: list[str], verbose: bool = True) -> dict:
           f"({ambiguous} 'just closed, not yet proven' skipped)")
     prog_err = [r["judge"]["progress_score"] - ground_truth_progress(r["ground_truth"]) for r in rows]
 
-    stats: dict = {"cycles": len(rows), "scenes": len(scenes)}
+    stats: dict = {"cycles": len(rows), "scenes": len(scenes), "fallback_cycles": fallback_cycles}
     if probs:
         ps = [p for p, _ in probs]
         ys = [y for _, y in probs]
