@@ -19,6 +19,8 @@ from __future__ import annotations
 import numpy as np
 import mujoco
 
+from .skills import TARGET_XY   # 真值与技能层必须用同一个目标区，不许各写一份
+
 CUBE_GEOM = "cube_geom"
 PAD_GEOMS = {"left": ("finger_left_pad",), "right": ("finger_right_pad",)}
 CUBE_REST_Z = 0.15       # cube centre height when resting on the table
@@ -301,7 +303,7 @@ class ArmLab:
             "right_touch": t["right"] > 0,
             "grasp_secure": bool(self.is_attached() or (t["left"] > 0 and t["right"] > 0)),
             "lifted": bool(obj[2] > CUBE_REST_Z + 0.02),
-            "in_target": bool(np.linalg.norm(obj[:2] - np.array([0.36, -0.13])) < 0.05
+            "in_target": bool(np.linalg.norm(obj[:2] - TARGET_XY) < 0.05
                               and obj[2] < CUBE_REST_Z + 0.02),
             "attached": self.is_attached(),
             # evidence 用于标定打分：刚合上还没验证过的那一段单独标出来，
