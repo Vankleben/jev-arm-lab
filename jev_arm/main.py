@@ -39,6 +39,11 @@ SKILL_NEEDS = {
 }
 
 
+# 抓取闸门把提议改判后的去向： grasp_secure 低于这个数连"再抓一次"都不值得，
+# 直接 hold 交回判断层（实测夹空时概率通常 <0.25，见 README「实测结果」）。
+GRASP_RETRY_GATE = 0.30
+
+
 def enforce(d, gate_confidence: float, gate_grasp: float) -> tuple[str, str]:
     """Code owns the loop: it may veto, downgrade or override the judge's proposal.
 
@@ -47,7 +52,7 @@ def enforce(d, gate_confidence: float, gate_grasp: float) -> tuple[str, str]:
     """
     final, notes = d.intent, []
     if final in ("lift", "carry", "lower") and d.grasp_secure_prob < gate_grasp:
-        final = "grasp" if d.grasp_secure_prob >= 0.30 else "hold"
+        final = "grasp" if d.grasp_secure_prob >= GRASP_RETRY_GATE else "hold"
         notes.append(f"grasp_secure={d.grasp_secure_prob:.2f} < {gate_grasp} -> 不许搬动")
     if d.intent_confidence < gate_confidence:
         notes.append(f"intent_confidence={d.intent_confidence:.2f} < {gate_confidence} -> 原地保持")
@@ -129,7 +134,6 @@ def main(argv=None) -> int:
                     help="随机化方块起始位置（批量标定用）")
     ap.add_argument("--seed", type=int, default=None, help="随机种子，便于复现某个场景")
     ap.add_argument("--quiet", action="store_true", help="批量跑时不要逐轮打印")
-    ap.add_argument("--no-frames", action="store_true")
     ap.add_argument("--stale-limit", type=float, default=1.0,
                     help="传感数据超过这个年龄（仿真秒）就不许动，交给人处理")
     ap.add_argument("--gate-confidence", type=float, default=0.30)

@@ -96,8 +96,7 @@ class Decision:
 
 
 # ------------------------------------------------------------------------------- state
-def build_state(lab, history: list[dict], instruction: str, cycle: int,
-                stress=None, sensors=None, rng=None) -> dict:
+def build_state(lab, history: list[dict], instruction: str, cycle: int, sensors=None) -> dict:
     """What the judge is told. With `sensors` the readings and their ages come from the
     sensor layer, so a stale or lying channel is visible in the state itself."""
     if sensors is not None:

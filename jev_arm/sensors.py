@@ -37,10 +37,6 @@ class Channel:
     t_last: float = -1e9
     value: dict = field(default_factory=dict)
 
-    @property
-    def age(self) -> float:
-        return self.t_last
-
 
 class SensorSuite:
     """Two channels: a camera publishing the object, and a gripper/tactile channel."""
