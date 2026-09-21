@@ -63,7 +63,6 @@ def replay_scene(path: Path, renderer: mujoco.Renderer, cam: mujoco.MjvCamera) -
     def advance(n: int) -> None:
         nonlocal step
         for _ in range(n):
-            lab._carry()
             mujoco.mj_step(lab.m, lab.d)
             step += 1
             if step % STEP_EVERY == 0:

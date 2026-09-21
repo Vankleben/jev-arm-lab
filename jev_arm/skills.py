@@ -45,10 +45,8 @@ def grasp(lab, ctx) -> dict:
     gap = lab.close_gripper(OBJECT_WIDTH)
     t = lab.pad_contacts()
     held = t["left"] > 0 and t["right"] > 0
-    if held:
-        lab.attach_object()      # 接触判定成立才"握住"（weld，说明见 sim.attach_object）
     note = (f"closed to {gap * 1000:.1f} mm, pad contacts L{t['left']}/R{t['right']}"
-            + (" -> held" if held else " -> NOT held"))
+            + (" -> holding (by contact friction)" if held else " -> NOT holding"))
     return _result("grasp", lab, note, err)
 
 
@@ -69,7 +67,6 @@ def lower(lab, ctx) -> dict:
 
 
 def release(lab, ctx) -> dict:
-    lab.detach_object()
     lab.open_gripper()
     return _result("release", lab, "opened the gripper")
 

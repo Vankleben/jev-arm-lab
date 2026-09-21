@@ -27,6 +27,7 @@ CUBE_REST_Z = 0.15       # cube centre height when resting on the table
 PAD_FACE_AT_ZERO = 0.005  # pad inner face offset when the slide joint is at 0 (metres)
 MAX_GAP = 0.11            # 2 * (PAD_FACE_AT_ZERO + slide range 0.05)
 GRIP_KP = 900.0           # position-actuator gain of the jaw (N/m per finger)
+SLIP_TOLERANCE_MPS = 0.05  # object-vs-hand relative speed above which a grasp is sliding
 
 
 class ArmLab:
@@ -59,9 +60,6 @@ class ArmLab:
                           for n in ("grip_left", "grip_right")]
         self.grip_joint = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_JOINT, "grip_left")
         self.grip_qadr = m.jnt_qposadr[self.grip_joint]
-        self._attached = False
-        self._grasp_rel_pos = np.zeros(3)
-        self._grasp_rel_quat = np.array([1.0, 0.0, 0.0, 0.0])
 
     def _calibrate_tcp(self) -> None:
         """Put the TCP site at the centre of the two finger pads (the grasp point)."""
@@ -96,7 +94,6 @@ class ArmLab:
 
     def step(self, n: int = 1) -> None:
         for _ in range(n):
-            self._carry()
             mujoco.mj_step(self.m, self.d)
             if self.tick_hook is not None:
                 self.tick_hook()
@@ -104,7 +101,6 @@ class ArmLab:
     def settle(self, max_steps: int = 1500, tol: float = 0.02) -> int:
         """Step until everything stops moving (arm joints *and* gripper fingers)."""
         for i in range(max_steps):
-            self._carry()
             mujoco.mj_step(self.m, self.d)
             if self.tick_hook is not None:
                 self.tick_hook()
@@ -154,29 +150,23 @@ class ArmLab:
         return float(np.linalg.norm(left - right) - 2.0 * self.pad_half_y)
 
     # ------------------------------------------------------------ grasp hold
-    # Documented simplification: the pads make and break contact physically (that is what
-    # the code checks before deciding a grasp succeeded), but *carrying* the object is done
-    # kinematically — the object keeps the relative pose it had when the grasp was closed.
-    # Carrying it by contact friction alone did not work in this model: measured 30 N of
-    # squeeze on a 50 g cube with friction 1.2 still slid off under load, cause unresolved.
-    # This lab is about the decision layer, so the hold is simplified and marked as such.
-    def attach_object(self) -> None:
-        rot = self.d.xmat[self.tcp_body].reshape(3, 3)
-        cube_body = self.m.geom_bodyid[self.geom_cube]
-        self._grasp_rel_pos = rot.T @ (self.d.xpos[cube_body] - self.d.xpos[self.tcp_body])
-        q = np.zeros(4)
-        mujoco.mju_mat2Quat(q, (rot.T @ self.d.xmat[cube_body].reshape(3, 3)).flatten())
-        self._grasp_rel_quat = q
-        self._attached = True
-        self.set_gap(self.object_width() - 0.002)   # keep a light touch, so the
-                                                    # state still reports contact
-        self.settle(300)
+    # Carrying is *physical*: the pads squeeze the cube and friction does the rest. There is
+    # no attach; the object is never teleported. Getting here needed two fixes, both measured
+    # with tools/diagnose_slip.py: (1) ik() used to write its solution into qpos, so every
+    # Cartesian move teleported the arm and the pads never actually travelled past the cube;
+    # (2) that artifact made contact-friction carrying look impossible ("gripped but never
+    # lifted"). With the solver kept pure, an 8 N pinch carries the cube 148 mm with 3 mm of
+    # transient slip at baseline parameters — no friction or contact tweaks required.
 
-    def detach_object(self) -> None:
-        self._attached = False
-
-    def is_attached(self) -> bool:
-        return bool(self._attached)
+    def slip_speed(self) -> float:
+        """Relative speed between the object and the TCP — nonzero means it is sliding."""
+        m, d = self.m, self.d
+        dof0 = m.jnt_dofadr[self.cube_joint]
+        v_obj = d.qvel[dof0:dof0 + 3]
+        jacp = np.zeros((3, m.nv))
+        jacr = np.zeros((3, m.nv))
+        mujoco.mj_jacSite(m, d, jacp, jacr, self.site_tcp)
+        return float(np.linalg.norm(v_obj - jacp @ d.qvel))
 
     def randomize_object(self, rng, x_range=(0.31, 0.43), y_range=(0.06, 0.20),
                          yaw_range=(-0.15, 0.15)) -> None:
@@ -203,21 +193,6 @@ class ArmLab:
         """Longest horizontal extent of the object (the cube is a box)."""
         size = self.m.geom_size[self.geom_cube]
         return float(2.0 * max(size[0], size[1]))
-
-    def _carry(self) -> None:
-        """Re-place the held object at its grasped pose relative to the hand."""
-        if not self._attached:
-            return
-        rot = self.d.xmat[self.tcp_body].reshape(3, 3)
-        self.d.qpos[self.cube_qadr:self.cube_qadr + 3] = (
-            self.d.xpos[self.tcp_body] + rot @ self._grasp_rel_pos)
-        held = np.zeros(9)   # relative rotation matrix from the stored quaternion
-        mujoco.mju_quat2Mat(held, self._grasp_rel_quat)
-        quat = np.zeros(4)
-        mujoco.mju_mat2Quat(quat, (rot @ held.reshape(3, 3)).flatten())
-        self.d.qpos[self.cube_qadr + 3:self.cube_qadr + 7] = quat
-        self.d.qvel[self.cube_qadr - 0:self.cube_qadr - 0 + 6] = 0.0
-        mujoco.mj_forward(self.m, self.d)
 
     # -------------------------------------------------------------------- IK
     def tcp_pos(self) -> np.ndarray:
@@ -267,19 +242,28 @@ class ArmLab:
         mujoco.mj_forward(m, d)
         return q, residual
 
-    def move_tcp(self, target_pos, target_mat=None, tol: float = 0.002, iters: int = 4) -> float:
+    def move_tcp(self, target_pos, target_mat=None, tol: float = 0.002, iters: int = 4,
+                 ramp: int = 8) -> float:
         """Servo the TCP to a Cartesian pose, correcting for the steady-state sag.
 
-        The position servos settle a few millimetres away from the commanded pose under
-        gravity (measured up to 8 mm), which is enough to spoil a 60 mm cube grasp. The sag
-        is repeatable, so commanding `target + (target - measured)` twice or thrice closes it.
+        The move is ramped — a linear interpolation over `ramp` sub-targets — instead of one
+        step command. A step makes the position servos accelerate hard, which momentarily
+        exceeds the friction cone of the grasp and lets the payload slide inside the fingers
+        (measured: 10 mm of in-hand slip during a single lift, and that offset lands exactly in
+        the placement error). Ramping is also what a real arm does. The position servos settle
+        a few millimetres away from the commanded pose under gravity (measured up to 8 mm),
+        which is enough to spoil a 60 mm cube grasp; the sag is repeatable, so commanding
+        `target + (target - measured)` twice or thrice closes it.
         """
         target = np.asarray(target_pos, dtype=float)
         cmd = target.copy()
         for _ in range(iters):
-            q, _ = self.ik(cmd, target_mat)
-            self.set_arm_target(q)
-            self.settle()
+            start = self.tcp_pos()
+            for k in range(1, ramp + 1):
+                waypoint = start + (cmd - start) * (k / ramp)
+                q, _ = self.ik(waypoint, target_mat)
+                self.set_arm_target(q)
+                self.settle()
             err = target - self.tcp_pos()
             if float(np.linalg.norm(err)) < tol:
                 break
@@ -304,22 +288,29 @@ class ArmLab:
         return touch
 
     def grasp_flags(self) -> dict:
-        """Ground truth in simulation (what the judge has to infer from state)."""
+        """Ground truth in simulation (what the judge has to infer from state).
+
+        Held = both pads in contact with the object. Carrying is physical now, so a held
+        object that slides relative to the hand is *not* secure. The `attached` key is kept
+        because the logs and summarize_log read it — it now means "held by contact".
+        """
         t = self.pad_contacts()
         obj = self.object_pose()
+        held = t["left"] > 0 and t["right"] > 0
+        slipping = held and self.slip_speed() > SLIP_TOLERANCE_MPS
         return {
             "left_touch": t["left"] > 0,
             "right_touch": t["right"] > 0,
-            "grasp_secure": bool(self.is_attached() or (t["left"] > 0 and t["right"] > 0)),
+            "grasp_secure": bool(held and not slipping),
+            "slipping": bool(slipping),
             "lifted": bool(obj[2] > CUBE_REST_Z + 0.02),
             "in_target": bool(np.linalg.norm(obj[:2] - TARGET_XY) < 0.05
                               and obj[2] < CUBE_REST_Z + 0.02),
-            "attached": self.is_attached(),
+            "attached": held,
             # evidence 用于标定打分：刚合上还没验证过的那一段单独标出来，
             # 否则"问我抓稳没有"会把模型正确的"不确定"算成错误。
-            "grasp_evidence": ("proven" if (self.is_attached() and self.object_clearance() > 0.02)
-                               else "unproven" if (self.is_attached() or (t["left"] > 0 and t["right"] > 0))
-                               else "none"),
+            "grasp_evidence": ("proven" if (held and self.object_clearance() > 0.02)
+                               else "unproven" if held else "none"),
         }
 
     def tcp_euler(self) -> np.ndarray:
