@@ -112,8 +112,17 @@ def report(patterns: list[str], verbose: bool = True) -> dict:
     mae = sum(abs(e) for e in prog_err) / len(prog_err)
     stats["progress_mae"] = mae
     vetoes = sum(1 for r in rows if r["override"])
+    # 物理危险：说"抓稳了"（>=0.6）而真值在滑 —— danger_fp 的物理版本。
+    # 旧日志没有 slipping 键（运动学携带时期无法表达），get 返回 None 自然为假。
+    slip_fp = sum(1 for r in rows if r["judge"]["source"] == "jev"
+                  and r["judge"]["grasp_secure_prob"] >= 0.6
+                  and bool(r["ground_truth"].get("slipping")))
+    stats["danger_slip_fp"] = slip_fp
     say(f"\ntask_progress: mean absolute error {mae:.2f} levels (of 0-3)")
     say(f"code vetoes  : {vetoes}/{len(rows)} cycles")
+    if slip_fp:
+        say(f"  WARNING: {slip_fp} cycle(s) claimed a secure hold (p>=0.6) while the object was "
+            "SLIPPING in the fingers (ground truth) — a physical danger miss, not just a metric one")
     intents: dict[str, int] = {}
     for r in rows:
         intents[r["final_intent"]] = intents.get(r["final_intent"], 0) + 1

@@ -4,6 +4,7 @@
     "scenes": 5,
     "finished": 0.0,
     "escalated": 1.0,
+    "dropped": 0.0,
     "err_median_mm": 269.1992756305262,
     "cycles_mean": 4,
     "accuracy": 1.0,
@@ -12,6 +13,7 @@
     "vetoes": 0,
     "danger_fp": 0,
     "danger_fn": 0,
+    "danger_slip_fp": 0,
     "n_scored": 15
   },
   {
@@ -19,6 +21,7 @@
     "scenes": 5,
     "finished": 1.0,
     "escalated": 0.0,
+    "dropped": 0.0,
     "err_median_mm": 15.400324671902236,
     "cycles_mean": 5.6,
     "accuracy": 1.0,
@@ -27,6 +30,7 @@
     "vetoes": 0,
     "danger_fp": 0,
     "danger_fn": 0,
+    "danger_slip_fp": 0,
     "n_scored": 20
   },
   {
@@ -34,6 +38,7 @@
     "scenes": 5,
     "finished": 1.0,
     "escalated": 0.0,
+    "dropped": 0.0,
     "err_median_mm": 0.9055385138137554,
     "cycles_mean": 5.4,
     "accuracy": 1.0,
@@ -42,6 +47,7 @@
     "vetoes": 0,
     "danger_fp": 0,
     "danger_fn": 0,
+    "danger_slip_fp": 0,
     "n_scored": 20
   },
   {
@@ -49,6 +55,7 @@
     "scenes": 5,
     "finished": 1.0,
     "escalated": 0.0,
+    "dropped": 0.0,
     "err_median_mm": 0.8246211251235557,
     "cycles_mean": 5.2,
     "accuracy": 1.0,
@@ -57,6 +64,7 @@
     "vetoes": 0,
     "danger_fp": 0,
     "danger_fn": 0,
+    "danger_slip_fp": 0,
     "n_scored": 20
   },
   {
@@ -64,6 +72,7 @@
     "scenes": 5,
     "finished": 0.0,
     "escalated": 1.0,
+    "dropped": 0.0,
     "err_median_mm": 269.1992756305262,
     "cycles_mean": 4,
     "accuracy": 1.0,
@@ -72,6 +81,7 @@
     "vetoes": 0,
     "danger_fp": 0,
     "danger_fn": 0,
+    "danger_slip_fp": 0,
     "n_scored": 15
   },
   {
@@ -79,6 +89,7 @@
     "scenes": 5,
     "finished": 1.0,
     "escalated": 0.0,
+    "dropped": 0.0,
     "err_median_mm": 1.4317821063276464,
     "cycles_mean": 5.4,
     "accuracy": 1.0,
@@ -87,6 +98,7 @@
     "vetoes": 0,
     "danger_fp": 0,
     "danger_fn": 0,
+    "danger_slip_fp": 0,
     "n_scored": 20
   },
   {
@@ -94,6 +106,7 @@
     "scenes": 5,
     "finished": 1.0,
     "escalated": 0.0,
+    "dropped": 0.0,
     "err_median_mm": 2.00249843945008,
     "cycles_mean": 5.8,
     "accuracy": 1.0,
@@ -102,6 +115,7 @@
     "vetoes": 0,
     "danger_fp": 0,
     "danger_fn": 0,
+    "danger_slip_fp": 0,
     "n_scored": 20
   },
   {
@@ -109,6 +123,7 @@
     "scenes": 5,
     "finished": 1.0,
     "escalated": 0.0,
+    "dropped": 0.0,
     "err_median_mm": 1.5999999999999903,
     "cycles_mean": 4.2,
     "accuracy": 1.0,
@@ -117,6 +132,7 @@
     "vetoes": 0,
     "danger_fp": 0,
     "danger_fn": 0,
+    "danger_slip_fp": 0,
     "n_scored": 12
   }
 ]
