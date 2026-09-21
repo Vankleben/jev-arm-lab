@@ -138,9 +138,9 @@ def main(argv=None) -> int:
                     help="注入哪种难例，见 jev_arm/stress.py（none/grasp_off/tactile_dead/...）")
     args = ap.parse_args(argv)
 
-    lab = ArmLab()
+    stress = get_stress(args.stress)   # 先校验名字，别等仿真都建好了才失败
     rng = np.random.default_rng(args.seed)
-    stress = get_stress(args.stress)
+    lab = ArmLab()
     lab.stress, lab.rng = stress, rng
     scene_info = {"cube_start": [round(float(v), 4) for v in lab.object_pose()],
                   "target_xy": [float(TARGET_XY[0]), float(TARGET_XY[1])],

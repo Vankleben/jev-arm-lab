@@ -72,4 +72,7 @@ STRESSORS: dict[str, Stress] = {
 
 
 def get(name: str) -> Stress:
-    return STRESSORS.get(name, Stress(name=name))
+    """拼错的名字直接报错，而不是静默当成无故障跑——那会让"失败地图"整个作废。"""
+    if name not in STRESSORS:
+        raise ValueError(f"unknown stressor {name!r}; valid names: {', '.join(STRESSORS)}")
+    return STRESSORS[name]
