@@ -9,9 +9,10 @@ Two rules keep this honest:
 2. **Each stressor maps to a story you can name** (dead tactile, stuck tactile, slow camera,
    camera unplugged, noisy measurement, miscalibration, someone bumping the table).
 
-Known limit: the grasp *hold* is a documented kinematic carry (see README), so a stressor
-like "the object is slippery" cannot be expressed — friction plays no part in transport
-here. That is a limitation of this lab, not a property of the judge.
+Known limit that has been lifted: carrying used to be a kinematic simplification (documented
+in the README), so a stressor like "the object is slippery" could not be expressed. As of
+2026-09-21 every carry is real contact friction, so friction-loss stressors are now
+expressible — adding them is the next step for this file.
 """
 
 from __future__ import annotations

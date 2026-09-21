@@ -28,8 +28,12 @@
 - **Fix, not a smarter model**: per-skill sensor-freshness gate + a stuck watchdog + escalate
   to a human. With it, the two blind-sensor cases stop and escalate 100% of the time, while
   the other six stressors keep completing with zero false alarms.
-- **Limits**: quasi-static tabletop, hand-serialized state (**no real vision**), grasp hold is
-  a documented kinematic simplification, 5–10 scenes per fault, never touched hardware.
+- **Limits**: quasi-static tabletop, hand-serialized state (**no real vision**), 5–10 scenes
+  per fault, never touched hardware. (The grasp hold used to be a documented kinematic
+  simplification; as of 2026-09-21 carrying is real contact friction — the "unresolved slip"
+  turned out to be an IK side effect that teleported the arm on every move, see README —
+  so slip faults are now expressible, though the failure map has not been re-run on the new
+  physics yet.)
 
 ---
 
@@ -134,7 +138,9 @@
 
 - 准静态桌面任务（不是飞行、不是动态环境、无人参与）；
 - 状态是**手工序列化**的，没有真实视觉（感知前端被假定已完成）；
-- 抓取后的"握住"是运动学携带的简化（README 有说明），所以"抓住后滑脱"这类接触失效**无法表达**；
+- 抓取后的"握住"曾是运动学携带的简化，所以"抓住后滑脱"这类接触失效当时无法表达；
+  2026-09-21 已改为真实接触摩擦搬运（真值新增 `slipping` 旗标），滑脱故障从此刻可注入，
+  但下面第 4 节的失败地图仍是旧物理下的数字，需重跑；
 - 每种故障只有 5–10 个场景，够说明量级、不够当定论；
 - 没上过真机。
 
